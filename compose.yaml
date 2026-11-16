@@ -1,0 +1,12 @@
+# Execução local do backend em container.
+# Não há container Oracle: o banco utilizado é o Oracle da FIAP, configurado no .env.
+services:
+  backend:
+    build: .
+    image: atai-backend:local
+    env_file:
+      - .env
+    environment:
+      PORT: ${PORT:-8080}
+    ports:
+      - "${PORT:-8080}:${PORT:-8080}"

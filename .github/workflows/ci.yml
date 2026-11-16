@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build e testes (sem Oracle)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+      - name: Permissão de execução do Maven Wrapper
+        run: chmod +x mvnw
+
+      - name: Compilar
+        run: ./mvnw -B -ntp compile
+
+      - name: Testes independentes do Oracle
+        # Executa apenas *Test/*Tests via Surefire. Testes *IT (Oracle real)
+        # ficam no perfil "integration-tests" e não rodam na CI.
+        run: ./mvnw -B -ntp verify
+
+      - name: Publicar relatórios de teste em caso de falha
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: target/surefire-reports/
+          retention-days: 7

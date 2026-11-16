@@ -1,0 +1,20 @@
+# Perfil de produção (Render).
+# DB_URL, DB_USERNAME e DB_PASSWORD são obrigatórios e devem vir do ambiente.
+# Não existe fallback: sem as variáveis, a aplicação falha na inicialização.
+
+spring:
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: none
+
+springdoc:
+  swagger-ui:
+    enabled: ${SWAGGER_ENABLED:true}
+  api-docs:
+    enabled: ${SWAGGER_ENABLED:true}
+
+logging:
+  level:
+    root: INFO
+    br.com.atai: INFO

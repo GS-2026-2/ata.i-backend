@@ -1,0 +1,16 @@
+# Perfil de desenvolvimento local.
+# Usa o mesmo Oracle (FIAP) configurado no .env — não há banco embarcado.
+
+spring:
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+
+logging:
+  level:
+    br.com.atai: DEBUG
+    com.zaxxer.hikari: INFO
+    # Altere para DEBUG para inspecionar o SQL gerado pelo Hibernate.
+    org.hibernate.SQL: INFO
