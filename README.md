@@ -8,7 +8,7 @@ O ATA.I organiza **prioridades anuais**, registra **reuniões** e **atas**, pres
 
 Fornecer uma API RESTful em Java/Spring Boot, persistida no Oracle Database da FIAP, organizada em camadas (Model, DAO, BO, Controller e Exception) e implantável no Render via Docker.
 
-> **Estado atual: scaffold de infraestrutura.** Nenhuma funcionalidade de negócio está implementada. Veja [Estado atual](#estado-atual-da-implementação).
+> **Estado atual: API funcional (sem IA e sem autenticação).** Todas as entidades do diagrama de classes, regras de negócio, endpoints REST e migrations Flyway estão implementados. Veja [Estado atual](#estado-atual-da-implementação).
 
 ## Stack e versões
 
@@ -22,7 +22,7 @@ Fornecer uma API RESTful em Java/Spring Boot, persistida no Oracle Database da F
 | Oracle JDBC | `ojdbc11` (gerenciado pelo Spring Boot) |
 | Jakarta Bean Validation | `spring-boot-starter-validation` |
 | Springdoc OpenAPI | 2.8.17 |
-| Flyway | `flyway-core` + `flyway-database-oracle` — **desabilitado** |
+| Flyway | `flyway-core` + `flyway-database-oracle` — **habilitado** (`V1__create_tables.sql`) |
 | Actuator | apenas `health` e `info` expostos |
 | Testes | JUnit 5 + Mockito + AssertJ (`spring-boot-starter-test`) |
 | Container | Docker (`eclipse-temurin:21-jdk` → `eclipse-temurin:21-jre-alpine`) |
@@ -136,7 +136,7 @@ Como o `.env` é lido:
 - **A aplicação exige uma conexão Oracle válida para iniciar.** Não existe banco embarcado (H2) nem fallback.
 - Se `DB_URL`, `DB_USERNAME` ou `DB_PASSWORD` estiverem ausentes ou vazias, a inicialização é interrompida antes de qualquer conexão (`RequiredDatabaseVariablesValidator`) com a mensagem:
   `Configuração do Oracle ausente: defina DB_URL, ... como variáveis de ambiente ou no arquivo .env`.
-- `ddl-auto: none`: o Hibernate **não cria nem altera tabelas**. Quando as entidades e tabelas existirem, o valor passará a `validate`.
+- `ddl-auto: validate`: o Flyway cria/versiona o esquema Oracle (`V1__create_tables.sql`) e o Hibernate valida as entidades na inicialização.
 
 ## Como executar
 
@@ -177,6 +177,42 @@ O Compose sobe apenas o backend. Não há container Oracle, porque o banco usado
 
 Ainda não existe nenhum teste `*IT`. Não há teste que suba o contexto completo, porque ele exige um Oracle real.
 
+## Endpoints da API
+
+| Recurso | Método | Rota | Descrição |
+|---|---|---|---|
+| Escolas | `GET` | `/api/escolas` | Listar escolas (`?incluirInativas=false`) |
+| Escolas | `GET` | `/api/escolas/{id}` | Detalhar escola |
+| Escolas | `POST` | `/api/escolas` | Criar escola |
+| Escolas | `PUT` | `/api/escolas/{id}` | Atualizar escola |
+| Escolas | `DELETE` | `/api/escolas/{id}` | Desativar escola |
+| Usuários | `GET` | `/api/usuarios` | Listar usuários (`?escolaId`) |
+| Usuários | `GET` | `/api/usuarios/{id}` | Detalhar usuário |
+| Usuários | `POST` | `/api/usuarios` | Criar usuário |
+| Usuários | `PUT` | `/api/usuarios/{id}` | Atualizar usuário |
+| Usuários | `DELETE` | `/api/usuarios/{id}` | Desativar usuário |
+| Prioridades | `GET` | `/api/prioridades` | Listar prioridades vigentes (`?escolaId&ano`) |
+| Prioridades | `GET` | `/api/prioridades/{id}` | Detalhar prioridade |
+| Prioridades | `POST` | `/api/prioridades` | Criar prioridade manualmente |
+| Prioridades | `PUT` | `/api/prioridades/{id}` | Atualizar prioridade manualmente |
+| Prioridades | `DELETE` | `/api/prioridades/{id}` | Desativar prioridade |
+| Prioridades | `GET` | `/api/prioridades/{id}/historico` | Histórico de alterações aprovadas e atas de origem |
+| Reuniões | `GET` | `/api/reunioes` | Listar reuniões (`?escolaId&ano`) |
+| Reuniões | `GET` | `/api/reunioes/{id}` | Detalhar reunião |
+| Reuniões | `POST` | `/api/reunioes` | Registrar reunião |
+| Reuniões | `PUT` | `/api/reunioes/{id}` | Atualizar reunião (bloqueado após aprovação da ata) |
+| Reuniões | `DELETE` | `/api/reunioes/{id}` | Excluir reunião (bloqueado após aprovação da ata) |
+| Reuniões / Ata | `GET` | `/api/reunioes/{id}/ata` | Consultar ata da reunião |
+| Reuniões / Ata | `POST` | `/api/reunioes/{id}/ata` | Criar ata da reunião (`MINUTA`) |
+| Atas | `GET` | `/api/atas/{id}` | Detalhar ata e propostas de alteração |
+| Atas | `PUT` | `/api/atas/{id}` | Editar texto da ata (`MINUTA`) |
+| Atas | `DELETE` | `/api/atas/{id}` | Excluir ata (`MINUTA`) |
+| Alterações | `GET` | `/api/atas/{id}/alteracoes` | Listar propostas da ata |
+| Alterações | `POST` | `/api/atas/{id}/alteracoes` | Adicionar proposta à ata (`MINUTA`) |
+| Alterações | `PUT` | `/api/atas/{id}/alteracoes/{alteracaoId}` | Editar proposta (`MINUTA`) |
+| Alterações | `DELETE` | `/api/atas/{id}/alteracoes/{alteracaoId}` | Remover proposta (`MINUTA`) |
+| Confirmação | `POST` | `/api/atas/{id}/confirmacao` | Confirmar ata (exclusivo do diretor, transacional) |
+
 ## Swagger / OpenAPI
 
 Com a aplicação em execução:
@@ -185,7 +221,7 @@ Com a aplicação em execução:
 - OpenAPI JSON: http://localhost:8080/v3/api-docs
 - Health: http://localhost:8080/actuator/health
 
-O título é "ATA.I API" e a versão, 0.1.0. A documentação ainda não lista endpoints, porque nenhum endpoint de negócio foi implementado.
+O título é "ATA.I API" e a versão, 0.1.0.
 
 ## Deploy no Render
 
@@ -231,9 +267,9 @@ Como validar:
 | Testes unitários/slice sem Oracle | ✅ Implementado |
 | Dockerfile / Compose | ✅ Criados |
 | CI (GitHub Actions) | ✅ Criada (execução no GitHub ainda não observada) |
-| Entidades, DAOs, BOs, Controllers de negócio | ❌ Não iniciado |
-| Exceções de domínio | ❌ Não iniciado |
-| Migrations de domínio | ❌ Não iniciado |
+| Entidades, DAOs, BOs, Controllers de negócio | ✅ Implementado (diagrama de classes completo) |
+| Exceções de domínio | ✅ Implementado (`404`, `409`, `422`) |
+| Migrations de domínio | ✅ Implementado (`V1__create_tables.sql`, Flyway ativo) |
 | Autenticação/autorização | ❌ Não iniciado |
 | Integração com IA | ❌ Não iniciado |
 | Deploy no Render | ❌ Não realizado |

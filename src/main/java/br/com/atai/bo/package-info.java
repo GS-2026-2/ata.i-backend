@@ -1,6 +1,4 @@
 /**
- * Camada BO (Business Object): casos de uso e regras de negócio, com controle transacional.
- * <p>
- * Pacote reservado na etapa de scaffold; ainda sem implementações.
+ * Camada BO (Business Object): casos de uso, regras de negócio e controle transacional do ATA.I.
  */
 package br.com.atai.bo;

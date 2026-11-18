@@ -1,6 +1,4 @@
 /**
- * Camada DAO: abstração da persistência (repositórios Spring Data JPA).
- * <p>
- * Pacote reservado na etapa de scaffold; ainda sem implementações.
+ * Camada DAO: repositórios Spring Data JPA para as entidades do ATA.I.
  */
 package br.com.atai.dao;

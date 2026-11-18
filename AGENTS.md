@@ -83,18 +83,23 @@ Aplicáveis somente quando a implementação funcional for autorizada:
 - Usuários escolares acessam apenas informações autorizadas de sua escola.
 - A integração com IA não pode inventar dados não fornecidos.
 
-## 6. Etapa atual: scaffold
+## 6. Etapa atual: desenvolvimento
 
-**Permitido:** configuração de infraestrutura, dependências e testes mínimos de inicialização.
+O scaffold está concluído. A implementação funcional está autorizada, limitada ao **diagrama de classes UML** do ATA.I (Escola, Usuario, Reuniao, Ata, AlteracaoPrioridade, PrioridadeAnual e os enums TipoUsuario, StatusAta e OperacaoPrioridade). O DER do banco ainda não existe.
 
-**Não implementar:**
+**Permitido:**
 
-- Endpoints de negócio ou CRUD.
-- Autenticação ou autorização.
-- Entidades, repositórios ou serviços específicos do ATA.I.
+- Entidades, DAOs/repositórios, BOs/services, DTOs, controllers e tratamento de exceções, restritos às classes do diagrama.
+- DDL Oracle derivado exclusivamente do diagrama de classes.
+
+**Não implementar sem nova autorização:**
+
+- Classes, tabelas ou campos fora do diagrama de classes (inclusive prestação de contas).
 - Integração com IA ou com frontend.
-- Migrações de tabelas de domínio.
+- Autenticação ou autorização (Spring Security).
 - Dados fictícios ou seeds.
+
+As demais regras (seções 3, 4 e 5) continuam valendo, incluindo `ddl-auto` como `none` ou `validate`.
 
 ## 7. Critérios da disciplina (entregas futuras)
 

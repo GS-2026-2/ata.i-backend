@@ -1,0 +1,11 @@
+package br.com.atai.exception;
+
+/**
+ * Exceção lançada quando uma regra de negócio do domínio é violada (HTTP 422).
+ */
+public class BusinessRuleException extends RuntimeException {
+
+    public BusinessRuleException(String message) {
+        super(message);
+    }
+}

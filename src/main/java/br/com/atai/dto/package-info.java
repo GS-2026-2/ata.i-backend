@@ -1,6 +1,4 @@
 /**
- * Contratos de entrada e saída da API (records), com validações Jakarta Bean Validation.
- * <p>
- * Pacote reservado na etapa de scaffold; ainda sem implementações.
+ * Contratos de entrada ({@code request}) e saída ({@code response}) da API ATA.I.
  */
 package br.com.atai.dto;

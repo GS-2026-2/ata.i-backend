@@ -1,6 +1,5 @@
 /**
- * Camada Model: entidades JPA do domínio do ATA.I, mapeadas para tabelas Oracle existentes.
- * <p>
- * Pacote reservado na etapa de scaffold; ainda sem implementações.
+ * Camada Model: entidades JPA do domínio do ATA.I, mapeadas para as tabelas Oracle
+ * criadas pela migration Flyway {@code V1__create_tables.sql}.
  */
 package br.com.atai.model;

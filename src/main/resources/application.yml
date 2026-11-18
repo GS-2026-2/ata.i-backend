@@ -36,18 +36,23 @@ spring:
   jpa:
     open-in-view: false
     hibernate:
-      # Nenhuma alteração automática de esquema.
-      # Mudar para "validate" quando as entidades e tabelas existirem.
-      ddl-auto: none
+      # Nenhuma alteração automática de esquema: o Flyway cria as tabelas
+      # e o Hibernate apenas valida se as entidades batem com o banco.
+      ddl-auto: validate
     properties:
       hibernate:
         jdbc:
           time_zone: UTC
+        type:
+          # Instant mapeado para TIMESTAMP (colunas dt_* do DDL), sempre em UTC.
+          preferred_instant_jdbc_type: TIMESTAMP
 
-  # Migrations desabilitadas até validar versão e permissões do Oracle FIAP.
+  # Migrations gerenciadas pelo Flyway.
   flyway:
-    enabled: false
+    enabled: true
     locations: classpath:db/migration
+    baseline-on-migrate: true
+    baseline-version: 0
 
 server:
   address: 0.0.0.0
